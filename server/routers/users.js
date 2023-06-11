@@ -26,15 +26,24 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
     console.log("get /")
+    const token = req.headers['x-access-token'];
+    console.log("token: ", token);
+    const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY); // Verify and decode the token
+    const user = await User.findOne({_id: decoded._id});
+
+    const usersSelected = await User.find({ _id: { $ne: user._id } }) // Find all users except the current user
+
+    res.status(200).send({ data: usersSelected, message: "Lista użytkowników" });
+
     //pobranie wszystkich użytkowników z bd:
-    User.find().exec()
-    .then(async () => {
-        const users = await User.find();
-        //konfiguracja odpowiedzi res z przekazaniem listy użytkowników: 
-        res.status(200).send({ data: users, message: "Lista użytkowników" });
-    })
-    .catch(error => {
-        res.status(500).send({ message: error.message }); });
+    // User.find().exec()
+    // .then(async () => {
+    //     const users = await User.find();
+    //     //konfiguracja odpowiedzi res z przekazaniem listy użytkowników: 
+    //     res.status(200).send({ data: users, message: "Lista użytkowników" });
+    // })
+    // .catch(error => {
+    //     res.status(500).send({ message: error.message }); });
     }
 )
 
@@ -66,6 +75,28 @@ router.delete("/delete", async (req, res) => {
 
       console.log("del end")
 
+})
+
+router.put("/addFriend", async (req, res) => {
+  const token = req.headers['x-access-token'];
+  const user_id_to_add = req.headers['user_to_add'];
+
+  const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY); // Verify and decode the token
+  const main_user = await User.findOne({_id: decoded._id});
+  const friend = await User.findOne({_id: user_id_to_add})
+
+  if (main_user == null || friend == null) {
+    return res.status(404).json({message: 'User or friend not found!'});
+  }
+
+  insertedFriendOne = {_id: friend._id, username: friend.firstName}
+  await User.updateOne({_id: main_user._id}, {$push: {'friends': insertedFriendOne}})
+
+  insertedFriendTwo = {_id: main_user._id, username: main_user.firstName}
+  await User.updateOne({_id: friend._id}, {$push: {'friends': insertedFriendTwo}})
+
+
+  return res.status(200).json({message : 'Added a new friend ' + friend.firstName});
 })
     
 module.exports = router

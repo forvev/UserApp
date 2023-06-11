@@ -18,6 +18,7 @@ app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes) //only get method doesn't require token
 app.use("/api/users/first", userRoutes)
 app.use("/api/users/delete", userRoutes)
+app.use("/api/users/addFriend", userRoutes)
 
 
 const port = process.env.PORT || 8080

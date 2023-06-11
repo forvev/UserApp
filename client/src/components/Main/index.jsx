@@ -104,22 +104,24 @@ const Main=()=>{
         window.location.reload()
     } 
     return (
-        <div className={styles.main_container}> 
-            <nav className={styles.navbar}>
-                {/* <h1>MySite</h1> */}
-                <button className={styles.white_btn} onClick={handleLogout}> Logout </button>
-            </nav> 
-            <nav className={styles.navbar}>
-                <button className={styles.white_btn} onClick={handleGetUsers}>Users</button>
-            </nav>
-            <nav className={styles.navbar}>
-                <button className={styles.white_btn} onClick={displayDetails}>User details</button>
-            </nav>
-            <nav className={styles.navbar}>
-                <button className={styles.white_btn} onClick={deleteAccount}>Delete account</button>
-            </nav>
+        <div>
+            <div className={styles.main_container}> 
+
+                <nav className={styles.navbar}>
+                    <button className={styles.white_btn} onClick={handleLogout}> Logout </button>
+                </nav> 
+                <nav className={styles.navbar}>
+                    <button className={styles.white_btn} onClick={handleGetUsers}>Users</button>
+                </nav>
+                <nav className={styles.navbar}>
+                    <button className={styles.white_btn} onClick={displayDetails}>User details</button>
+                </nav>
+                <nav className={styles.navbar}>
+                    <button className={styles.white_btn} onClick={deleteAccount}>Delete account</button>
+                </nav>
+            </div>     
             {dane.length>0 ? <Users users={dane} number={myNumber}/> : <p>empty</p>}
-        </div>     
+         </div>
     )
 }
 
