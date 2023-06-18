@@ -99,6 +99,30 @@ const Main=()=>{
         }
     }
 
+    const showFriends = async (e) =>{
+        e.preventDefault()
+        const token = localStorage.getItem("token")
+        
+        if (token) {
+            try {
+            const config = {
+                method: 'get',
+                url: 'http://localhost:8080/api/users/showFriends',
+                headers: { 'Content-Type': 'application/json', 'x-access-token': token }
+            }
+            const { data: res } = await axios(config)
+            console.log(res.data)
+            ustawDane([res.data]) // `res.data` - zawiera sparsowane dane – listę
+        } catch (error) {
+            if (error.response && error.response.status >= 400 &&error.response.status <= 500)
+            {
+                localStorage.removeItem("token") 
+                window.location.reload()
+            } 
+        }
+        } 
+    }
+
     const handleLogout = () => {
         localStorage.removeItem("token") 
         window.location.reload()
@@ -118,6 +142,9 @@ const Main=()=>{
                 </nav>
                 <nav className={styles.navbar}>
                     <button className={styles.white_btn} onClick={deleteAccount}>Delete account</button>
+                </nav>
+                <nav className={styles.navbar}>
+                    <button className={styles.white_btn} onClick={showFriends}>Show friends</button>
                 </nav>
             </div>     
             {dane.length>0 ? <Users users={dane} number={myNumber}/> : <p>empty</p>}

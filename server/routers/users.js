@@ -55,7 +55,7 @@ router.get("/first", async (req, res)=>{
             const token = req.headers['x-access-token'];
             const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY); // Verify and decode the token
             const users = await User.findOne({_id: decoded._id});
-            res.status(200).send({ data: users, message: "Lista użytkowników" });
+            res.status(200).send({ data: users, message: "User details are returned" });
         })
         .catch(error => {
             res.status(500).send({ message: error.message }); });
@@ -89,14 +89,54 @@ router.put("/addFriend", async (req, res) => {
     return res.status(404).json({message: 'User or friend not found!'});
   }
 
-  insertedFriendOne = {_id: friend._id, username: friend.firstName}
-  await User.updateOne({_id: main_user._id}, {$push: {'friends': insertedFriendOne}})
+  const query = {
+    _id: main_user._id,
+    'friends._id': friend._id
+  };
 
-  insertedFriendTwo = {_id: main_user._id, username: main_user.firstName}
-  await User.updateOne({_id: friend._id}, {$push: {'friends': insertedFriendTwo}})
+  var myValidation = 1
+  await User.findOne(query)
+  .then(user => {
+    if (user) {
+      console.log('Friend exists in the array.');
+      myValidation = 1
+    } else {
+      console.log('Friend does not exist in the array.');
+      myValidation = 0
+    }
+  })
+  .catch(error => {
+    console.log('Error occurred while checking friend existence:', error);
+  });
 
+  if (myValidation == 0){
+    console.log("validation: ", myValidation)
+    insertedFriendOne = {_id: friend._id, username: friend.firstName}
+    await User.updateOne({_id: main_user._id}, {$push: {'friends': insertedFriendOne}})
+  
+    insertedFriendTwo = {_id: main_user._id, username: main_user.firstName}
+    await User.updateOne({_id: friend._id}, {$push: {'friends': insertedFriendTwo}})
+  
+  
+    return res.status(200).json({message : 'Added a new friend ' + friend.firstName});
+  }
+  //if (User.findOne({friends: friend})){
+    // console.log("your have this friend already!")
+    // return res.status(404).json({message: 'User already exists!'});
+  //}else{
+  //}
+})
 
-  return res.status(200).json({message : 'Added a new friend ' + friend.firstName});
+router.get("/showFriends", async (req, res) => {
+  User.find().exec()
+        .then(async () =>{
+            const token = req.headers['x-access-token'];
+            const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY); // Verify and decode the token
+            const users = await User.findOne({_id: decoded._id});
+            res.status(200).send({ data: users, message: "Firends list" });
+        })
+        .catch(error => {
+            res.status(500).send({ message: error.message }); });
 })
     
 module.exports = router
