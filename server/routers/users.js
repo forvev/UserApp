@@ -99,7 +99,7 @@ router.put("/addFriend", async (req, res) => {
   .then(user => {
     if (user) {
       console.log('Friend exists in the array.');
-      myValidation = 1
+      return res.status(500).send({message: "You have this friend in your list already!"})
     } else {
       console.log('Friend does not exist in the array.');
       myValidation = 0
@@ -120,11 +120,7 @@ router.put("/addFriend", async (req, res) => {
   
     return res.status(200).json({message : 'Added a new friend ' + friend.firstName});
   }
-  //if (User.findOne({friends: friend})){
-    // console.log("your have this friend already!")
-    // return res.status(404).json({message: 'User already exists!'});
-  //}else{
-  //}
+
 })
 
 router.get("/showFriends", async (req, res) => {
@@ -133,7 +129,7 @@ router.get("/showFriends", async (req, res) => {
             const token = req.headers['x-access-token'];
             const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY); // Verify and decode the token
             const users = await User.findOne({_id: decoded._id});
-            res.status(200).send({ data: users, message: "Firends list" });
+            res.status(200).send({ data: users.friends, message: "Firends list" });
         })
         .catch(error => {
             res.status(500).send({ message: error.message }); });

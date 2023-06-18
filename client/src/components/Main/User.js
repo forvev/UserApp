@@ -10,8 +10,6 @@ const User = (props) => {
     const token = localStorage.getItem("token")
     const { decodedToken, isExpired } = useJwt(token);
 
-    console.log("dec: ", decodedToken)
-
     const addFriendClick = async (e) =>{
         console.log("name: ", user.firstName)
 
@@ -61,12 +59,12 @@ const User = (props) => {
         console.log("I am in the 1st part")
         return ( 
             <nav>
-                <li> {user.firstName} {user.lastName} </li>
                 <button onClick={addFriendClick}>Add to friends</button>
+                <li> {user.firstName} {user.lastName} </li>
             </nav>
         ); 
-    }else{
-        console.log("I am in the 2st part")
+    }else if (props.number === 2){
+        console.log("I am in the 2st part", user.firstName)
         return ( 
             <div>
                 <b>Account details</b>
@@ -74,6 +72,16 @@ const User = (props) => {
                 <p>email: {user.email}</p>
                 <p>id: {props.value}</p>
             </div>
+            
+        ); 
+    }
+    else if(props.number === 3){
+        console.log("I am in the 3st part", user.firstName)
+        return ( 
+            <nav>
+                <li>name: {user.firstName} id: {props.value}</li>
+                <button>Send a message</button>
+            </nav>
             
         ); 
     }

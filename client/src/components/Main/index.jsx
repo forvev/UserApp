@@ -9,11 +9,18 @@ const Main=()=>{
     const [dane, ustawDane] = useState([])
     const [myNumber, setMyNumber] = useState() // 1 - it will fetch name and surname. 2 - it will fetch all of the details
 
+    const [showUsers, setShowUsers] = useState(false); // State variable for Users button click
+    const [showUserDetails, setShowUserDetails] = useState(false); // State variable for User details button click
+    const [showFirends, setShowFriends] = useState([])
+
     const handleGetUsers = async (e) => { 
         e.preventDefault()
         ustawDane([]);
 
         setMyNumber(1) //set number 1 if we need all of the users
+        setShowUsers(true)
+        setShowUserDetails(false)
+        setShowFriends(false)
         //pobierz token z localStorage:
         const token = localStorage.getItem("token")
         //jeśli jest token w localStorage to: 
@@ -47,23 +54,21 @@ const Main=()=>{
         ustawDane([]);
 
         setMyNumber(2) //set number 2 if we need only one user (the signed in one)
+        setShowUserDetails(true)
+        setShowUsers(false)
+        setShowFriends(false)
         const token = localStorage.getItem("token")
 
         if (token) {
             try {
-            //konfiguracja zapytania asynchronicznego z tokenem w nagłówku: 
             const config = {
                 method: 'get',
                 url: 'http://localhost:8080/api/users/first',
                 headers: { 'Content-Type': 'application/json', 'x-access-token': token }
             }
-            //wysłanie żądania o dane:
             const { data: res } = await axios(config)
-            //ustaw dane w komponencie za pomocą hooka useState na listę z danymi przesłanymi
-            //z serwera – jeśli został poprawnie zweryfikowany token
-            console.log(res.data)
+            console.log("details: ",res.data)
             ustawDane([res.data]) // `res.data` - zawiera sparsowane dane – listę
-            //console.log("data2:",dane)
         } catch (error) {
             if (error.response && error.response.status >= 400 &&error.response.status <= 500)
             {
@@ -101,6 +106,11 @@ const Main=()=>{
 
     const showFriends = async (e) =>{
         e.preventDefault()
+        setMyNumber(3)
+
+        setShowUserDetails(false)
+        setShowUsers(false)
+        setShowFriends(true)
         const token = localStorage.getItem("token")
         
         if (token) {
@@ -111,8 +121,10 @@ const Main=()=>{
                 headers: { 'Content-Type': 'application/json', 'x-access-token': token }
             }
             const { data: res } = await axios(config)
-            console.log(res.data)
-            ustawDane([res.data]) // `res.data` - zawiera sparsowane dane – listę
+            console.log("dane: ",res.data)
+            ustawDane(res.data) // `res.data` - zawiera sparsowane dane – listę
+            console.log("hehe", dane.username)
+
         } catch (error) {
             if (error.response && error.response.status >= 400 &&error.response.status <= 500)
             {
@@ -122,6 +134,7 @@ const Main=()=>{
         }
         } 
     }
+
 
     const handleLogout = () => {
         localStorage.removeItem("token") 
@@ -146,8 +159,24 @@ const Main=()=>{
                 <nav className={styles.navbar}>
                     <button className={styles.white_btn} onClick={showFriends}>Show friends</button>
                 </nav>
+            </div>
+            <div>
+                {(showUsers || showUserDetails) && (dane.length>0 ? <Users users={dane} number={myNumber}/> : <p>empty</p>)}
+                {showFirends && (dane.length>0 ? 
+                                            <div className="user-table">
+                                                <ul>
+                                                    {dane.map((item) => (
+                                                        <div>
+                                                            {/* <button onClick={removeFriend}>remove</button> */}
+                                                            <li key={item._id}>{item.username}</li>
+                                                        </div>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            : 
+                                            <p>empty</p>)}
+
             </div>     
-            {dane.length>0 ? <Users users={dane} number={myNumber}/> : <p>empty</p>}
          </div>
     )
 }
