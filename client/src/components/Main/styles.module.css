@@ -58,6 +58,12 @@
 ul {
 	list-style-type: none;
 	padding: 0;
+	text-align: center;
+	margin: 10px 0;
+	width: 80%;
+	max-width: 400px;
+  padding: 20px;
+  margin: 0 auto;
   }
   
   ul li {
@@ -72,4 +78,20 @@ ul {
   ul li:hover {
 	background-color: #32a48f;
 	cursor: pointer;
+  }
+
+  .account_details {
+	border: 1px solid #ccc;
+	padding: 20px;
+	margin-bottom: 20px;
+	text-align: center;
+  }
+  
+  .account_details b {
+	font-size: 18px;
+	margin-bottom: 10px;
+  }
+  
+  .account_details p {
+	margin: 10px 0;
   }

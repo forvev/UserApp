@@ -13,10 +13,6 @@ const User = (props) => {
     const { decodedToken, isExpired } = useJwt(token);
     const [friendState, setFriendState] = useState([])
 
-    // function refreshPage() {
-    //     window.location.reload(false);
-    //   }
-
     const addFriendClick = async (e) =>{
         console.log("name: ", user.firstName)
 
@@ -40,7 +36,6 @@ const User = (props) => {
         }
         } 
 
-        //refreshPage()
         window.location.reload()
     }
     
@@ -97,7 +92,7 @@ const User = (props) => {
     }else if (props.number === 2){
         console.log("I am in the 2st part", user.firstName)
         return ( 
-            <div>
+            <div className={styles.account_details}>
                 <b>Account details</b>
                 <p>name and surname: {user.firstName} {user.lastName}</p>
                 <p>email: {user.email}</p>
