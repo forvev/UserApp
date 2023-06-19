@@ -77,6 +77,7 @@ router.delete("/delete", async (req, res) => {
 
 })
 
+
 router.put("/addFriend", async (req, res) => {
   const token = req.headers['x-access-token'];
   const user_id_to_add = req.headers['user_to_add'];
@@ -94,34 +95,28 @@ router.put("/addFriend", async (req, res) => {
     'friends._id': friend._id
   };
 
-  var myValidation = 1
-  await User.findOne(query)
-  .then(user => {
-    if (user) {
+  try{
+    const findUser = await User.findOne(query)
+
+    if (findUser){
       console.log('Friend exists in the array.');
-      return res.status(500).send({message: "You have this friend in your list already!"})
-    } else {
+        return res.status(200).send({message: "You have this friend in your list already!"})
+    }else{
       console.log('Friend does not exist in the array.');
-      myValidation = 0
+      insertedFriendOne = {_id: friend._id, username: friend.firstName}
+      await User.updateOne({_id: main_user._id}, {$push: {'friends': insertedFriendOne}})
+    
+      insertedFriendTwo = {_id: main_user._id, username: main_user.firstName}
+      await User.updateOne({_id: friend._id}, {$push: {'friends': insertedFriendTwo}})
+    
+      console.log("e3")
+      return res.status(200).json({message : 'Added a new friend ' + friend.firstName});
     }
-  })
-  .catch(error => {
-    console.log('Error occurred while checking friend existence:', error);
-  });
-
-  if (myValidation == 0){
-    console.log("validation: ", myValidation)
-    insertedFriendOne = {_id: friend._id, username: friend.firstName}
-    await User.updateOne({_id: main_user._id}, {$push: {'friends': insertedFriendOne}})
-  
-    insertedFriendTwo = {_id: main_user._id, username: main_user.firstName}
-    await User.updateOne({_id: friend._id}, {$push: {'friends': insertedFriendTwo}})
-  
-  
-    return res.status(200).json({message : 'Added a new friend ' + friend.firstName});
+  } catch (error) {
+    res.status(500).send({ message: error.message });
   }
-
 })
+
 
 router.get("/showFriends", async (req, res) => {
   User.find().exec()
@@ -133,6 +128,46 @@ router.get("/showFriends", async (req, res) => {
         })
         .catch(error => {
             res.status(500).send({ message: error.message }); });
+})
+
+
+router.delete("/removeFriend", async (req, res) => {
+  try {
+    const friend_to_delete_id = req.headers['friend_id']; 
+    console.log("id:",friend_to_delete_id)
+
+    const token = req.headers['x-access-token'];
+    const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY); // Verify and decode the token
+    
+    const user = await User.findByIdAndUpdate(decoded._id, { $pull: { friends: { _id: friend_to_delete_id } } });
+    // const userFind = await User.findOne({"friends._id": friendToDelete_id})
+    // console.log("user's friends: ", userFind)
+    const friend = await User.findByIdAndUpdate(friend_to_delete_id, { $pull: { friends: { _id: decoded._id } } });
+
+    res.status(200).send({ message: "Friend successfully removed." });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+router.get("/is_friend", async(req, res) =>{
+  const friend_id = req.headers['friend_id'];
+
+  try{
+    const token = req.headers['x-access-token'];
+    const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY); // Verify and decode the token
+
+    const my_user = await User.findOne({_id: decoded._id, 'friends._id': friend_id})
+    if(my_user){
+      res.status(200).json({message: "true"})
+    }
+    else{
+      res.status(200).json({message: "false"})
+    }
+
+  }catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 })
     
 module.exports = router

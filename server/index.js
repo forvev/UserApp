@@ -16,11 +16,12 @@ app.get("/api/users/",tokenVerification)
 //the structure is crucial
 app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes) //only get method doesn't require token
-app.use("/api/users/first", userRoutes)
-app.use("/api/users/delete", userRoutes)
-app.use("/api/users/addFriend", userRoutes)
-app.use("/api/users/showFriends", userRoutes)
-
+// app.use("/api/users/first", userRoutes)
+// app.use("/api/users/delete", userRoutes)
+// app.use("/api/users/addFriend", userRoutes)
+// app.use("/api/users/showFriends", userRoutes)
+// app.use("/api/users/removeFriend", userRoutes)
+// app.use("/api/users/is_friend",userRoutes)
 
 const port = process.env.PORT || 8080
 

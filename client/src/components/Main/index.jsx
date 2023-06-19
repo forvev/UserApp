@@ -39,7 +39,8 @@ const Main=()=>{
             console.log(res.data)
             ustawDane(res.data) // `res.data` - zawiera sparsowane dane – listę
             console.log("data1", dane)
-        } catch (error) {
+        } 
+        catch (error) {
             if (error.response && error.response.status >= 400 &&error.response.status <= 500)
             {
                 localStorage.removeItem("token") 
@@ -121,9 +122,7 @@ const Main=()=>{
                 headers: { 'Content-Type': 'application/json', 'x-access-token': token }
             }
             const { data: res } = await axios(config)
-            console.log("dane: ",res.data)
             ustawDane(res.data) // `res.data` - zawiera sparsowane dane – listę
-            console.log("hehe", dane.username)
 
         } catch (error) {
             if (error.response && error.response.status >= 400 &&error.response.status <= 500)
@@ -133,6 +132,30 @@ const Main=()=>{
             } 
         }
         } 
+    }
+
+    const removeFriend = async (friendToRemove) =>{
+
+        const token = localStorage.getItem("token")
+        console.log("friend to remove:", friendToRemove._id);
+        if (token) {
+            try {
+            const config = {
+                method: 'delete',
+                url: 'http://localhost:8080/api/users/removeFriend',
+                headers: { 'Content-Type': 'application/json', 'x-access-token': token, 'friend_id': friendToRemove._id }
+            }
+            const { data: res } = await axios(config)
+            //ustawDane(res.data) // `res.data` - zawiera sparsowane dane – listę
+
+        } catch (error) {
+            if (error.response && error.response.status >= 400 &&error.response.status <= 500)
+            {
+                localStorage.removeItem("token") 
+                window.location.reload()
+            } 
+        }
+        }
     }
 
 
@@ -167,7 +190,7 @@ const Main=()=>{
                                                 <ul>
                                                     {dane.map((item) => (
                                                         <div>
-                                                            {/* <button onClick={removeFriend}>remove</button> */}
+                                                            <button onClick={() => removeFriend(item)}>remove</button>
                                                             <li key={item._id}>{item.username}</li>
                                                         </div>
                                                     ))}

@@ -47,6 +47,14 @@
 	margin-right: 20px;
 }
 
+.red_button {
+	color: red;
+}
+
+.white_button {
+	color: white;
+}
+
 ul {
 	list-style-type: none;
 	padding: 0;
