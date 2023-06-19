@@ -13,6 +13,9 @@ const User = (props) => {
     const { decodedToken, isExpired } = useJwt(token);
     const [friendState, setFriendState] = useState([])
 
+    // function refreshPage() {
+    //     window.location.reload(false);
+    //   }
 
     const addFriendClick = async (e) =>{
         console.log("name: ", user.firstName)
@@ -33,10 +36,12 @@ const User = (props) => {
             {
                 console.log("erorr!", error)
                 localStorage.removeItem("token") 
-                window.location.reload()
             } 
         }
         } 
+
+        //refreshPage()
+        window.location.reload()
     }
     
 
@@ -63,15 +68,6 @@ const User = (props) => {
             } 
         }
         } 
-
-        // if(friendState==="false"){
-        //     console.log("heyy")
-        //     return myStyles.red_button
-        // }
-        // else{
-        //     console.log("heyy2")
-        //     return myStyles.white_button
-        // }
     }
 
     const myStyles = {

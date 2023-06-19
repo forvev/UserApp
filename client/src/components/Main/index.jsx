@@ -156,6 +156,8 @@ const Main=()=>{
             } 
         }
         }
+
+        window.location.reload()
     }
 
 
